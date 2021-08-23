@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
-using EarlNavigation.Data;
-using EarlNavigation.Models;
+using Navigation.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace EarlNavigation
+namespace Navigation
 {
     public class Startup
     {
@@ -29,34 +30,25 @@ namespace EarlNavigation
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseSqlite(
-                        Configuration.GetConnectionString("DefaultConnection"));
-                    options.UseLazyLoadingProxies();
-                }
-                );
+            {
+                options.
+                    UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                // UseMySql(Configuration.GetConnectionString("mydb"),ServerVersion.AutoDetect(Configuration.GetConnectionString("mydb")));
+                options.UseLazyLoadingProxies();
+            });
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<AppUser,IdentityRole>(options =>
+            services.AddDefaultIdentity<IdentityUser>(options =>
                 {
-                    options.SignIn.RequireConfirmedAccount = true;
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedPhoneNumber = false;
+
                     options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireDigit = true;
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequiredUniqueChars = 1;
-
-                    options.User.RequireUniqueEmail = true;
-                    
-
                 })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddRazorPages();
-            
             services.AddControllersWithViews();
-
-            services.AddScoped<UserManager<AppUser>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,6 +66,7 @@ namespace EarlNavigation
                 app.UseHsts();
             }
 
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
