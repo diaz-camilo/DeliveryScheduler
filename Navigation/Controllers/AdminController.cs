@@ -88,13 +88,25 @@ namespace Navigation.Controllers
             _context.Admin.FirstOrDefault(x => x.Identity.UserName == adminUserName)
                 ?.Drivers
                 .Add(driver);
+            await _context.SaveChangesAsync();
 
             ViewBag.isSuccess = true;
             return View();
         }
-        
 
-        // GET: Admin/Details/5
+        public async Task<IActionResult> ListDrivers()
+        {
+            // Get logged in Admin
+            var adminUserName = HttpContext.User.Identity?.Name;
+            var admin = await _context.Admin.FirstOrDefaultAsync(x => x.Identity.UserName == adminUserName);
+
+            var drivers = admin.Drivers;
+
+            return View(drivers);
+        }
+        
+        
+        //GET: Admin/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

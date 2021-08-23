@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Navigation.Data;
+using Navigation.Models;
 
 namespace Navigation.Areas.Identity.Pages.Account
 {
@@ -25,13 +27,15 @@ namespace Navigation.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender
-            , RoleManager<IdentityRole> roleManager
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context
             )
         {
             _userManager = userManager;
@@ -39,6 +43,7 @@ namespace Navigation.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _context = context;
         }
 
         [BindProperty]
@@ -97,6 +102,16 @@ namespace Navigation.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Admin created a new account with password.");
 
+                    var newUserId = _userManager.Users.FirstOrDefault(x => x.Email == Input.Email)?.Id;
+                    await _context.Admin.AddAsync(new Admin()
+                    {
+                        IdentityID = newUserId,
+                        Name = "Admin",
+                    });
+                    await _context.SaveChangesAsync();
+                    
+                    _logger.LogInformation("Admin User Added to DB");
+                    
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
