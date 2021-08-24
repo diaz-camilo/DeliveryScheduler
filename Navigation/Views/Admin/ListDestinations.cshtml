@@ -1,0 +1,53 @@
+@model IEnumerable<Navigation.Models.Driver>
+
+@{
+    ViewData["Title"] = "Destinations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@foreach (var item in Model)
+{
+    <h3 class="p-3">@Html.DisplayFor(model => item.Name)</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Destinations[0].CustomerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Destinations[0].Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Destinations[0].DueTime)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var destinations = item.Destinations.OrderBy(x => x.DueTime);
+        }
+        @foreach (var destination in destinations)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => destination.CustomerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => destination.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => destination.DueTime)
+                </td>
+                <td>
+                    <a asp-controller="Destination" asp-action="Edit" asp-route-id="@destination.Id">Edit</a> |
+                    <a asp-controller="Destination" asp-action="Details" asp-route-id="@destination.Id">Details</a> |
+                    <a asp-controller="Destination" asp-action="Delete" asp-route-id="@destination.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

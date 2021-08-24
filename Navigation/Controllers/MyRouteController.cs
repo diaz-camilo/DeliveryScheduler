@@ -25,31 +25,30 @@ namespace Navigation.Controllers
             _context = context;
         }
         
-        public string GetUserEmail() => HttpContext.User.Identity.Name;
+        private string GetDriverEmail() => HttpContext.User.Identity?.Name;
+
+        private async Task<Driver> GetDriverAsync() =>
+            await _context.Drivers.FirstOrDefaultAsync(x => x.Identity.UserName == GetDriverEmail());
 
         public async Task<IActionResult> Index()
         {
+            // Sample Google maps url:
+            // https://www.google.com/maps/dir/?api=1&origin=Space+Needle+Seattle+WA&destination=Pike+Place+Market+Seattle+WA&travelmode=bicycling
+            
             const string urlStart = @"https://www.google.com/maps/dir/?api=1&destination=";
             const string urlEnd = @"&travelmode=driving";
+
+            var destinations = GetDriverAsync().Result.Destinations;
             
-                
             
-            // var userEmail = GetUserEmail();
-            //
-            // var user = await _context.Admin.FirstOrDefaultAsync(x => x.Identity.Email == userEmail);
-            //
-            // var destinations = _context.Destinations.Where(x => x.Driver == user);
-            //
-            // // https://www.google.com/maps/dir/?api=1&origin=Space+Needle+Seattle+WA&destination=Pike+Place+Market+Seattle+WA&travelmode=bicycling
-            // foreach (var destination in destinations)
-            // {
-            //     destination.Address = urlStart + HttpUtility.UrlEncode(destination.Address) + urlEnd;
-            // }
-            //
-            // destinations.OrderBy(x => x.DueTime);
-            //
-            // return View(destinations);
-            return View();
+            foreach (var destination in destinations)
+            {
+                destination.Address = urlStart + HttpUtility.UrlEncode(destination.Address) + urlEnd;
+            }
+            
+            destinations.OrderBy(x => x.DueTime);
+            
+            return View(destinations);
         }
     }
 }

@@ -28,4 +28,12 @@
       <Folder Include="Views\MyRoute" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Destination\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Destination\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Destination\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Destination\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Destination\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

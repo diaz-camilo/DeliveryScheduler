@@ -27,16 +27,15 @@ namespace Navigation.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        
-        
 
-        // GET: Admin
-        public async Task<IActionResult> Index()
+        private Admin GetAdmin()
         {
-            var applicationDbContext = _context.Admin.Include(u => u.Identity);
-            return View(await applicationDbContext.ToListAsync());
+            // Get logged in Admin
+            var adminUserName = HttpContext.User.Identity?.Name;
+            var admin = _context.Admin.FirstOrDefault(x => x.Identity.UserName == adminUserName);
+            return admin;
         }
-
+        
         [HttpGet]
         public IActionResult AddDriver()
         {
@@ -96,15 +95,86 @@ namespace Navigation.Controllers
 
         public async Task<IActionResult> ListDrivers()
         {
-            // Get logged in Admin
-            var adminUserName = HttpContext.User.Identity?.Name;
-            var admin = await _context.Admin.FirstOrDefaultAsync(x => x.Identity.UserName == adminUserName);
+            var admin = GetAdmin();
+
+            var drivers = admin.Drivers;
+
+            return View(drivers);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddDestination(int? id = 0)
+        {
+            var admin = GetAdmin();
+            var drivers = admin.Drivers;
+            var selectListOfDrivers = 
+                drivers.Select(driver => new SelectListItem(driver.Name, driver.DriverID.ToString())).ToList();
+
+            var model = new AddDestinationModel()
+            {
+                Drivers = selectListOfDrivers
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddDestination(AddDestinationModel model)
+        {
+            var admin = GetAdmin();
+            var drivers = admin.Drivers;
+            var selectListOfDrivers = 
+                drivers.Select(driver => new SelectListItem(driver.Name, driver.DriverID.ToString())).ToList();
+            
+            if (!ModelState.IsValid)
+            {
+                model.Drivers = selectListOfDrivers;
+                return View(model);
+            }
+
+            var driver = drivers.FirstOrDefault(x => x.DriverID == model.DriverID);
+            
+            _context.Destinations.Add(new Destination()
+            {
+                Address = model.Address,
+                CustomerMobile = model.CustomerMobile,
+                CustomerName = model.CustomerName,
+                DueTime = model.DueTime,
+                Notes = model.Notes,
+                Driver = driver
+            });
+            await _context.SaveChangesAsync();
+
+            ViewBag.isSuccess = true;
+            var successModelodel = new AddDestinationModel()
+            {
+                Drivers = selectListOfDrivers
+            };
+
+            return View(successModelodel);
+        }
+
+        public IActionResult ListDestinations(int? i)
+        {
+            // todo pass selected driver or all drivers
+            var admin = GetAdmin();
 
             var drivers = admin.Drivers;
 
             return View(drivers);
         }
         
+        
+
+        // CRUD methods
+        
+        /*
+        // GET: Admin
+        public async Task<IActionResult> Index()
+        {
+            var applicationDbContext = _context.Admin.Include(u => u.Identity);
+            return View(await applicationDbContext.ToListAsync());
+        }
         
         //GET: Admin/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -235,6 +305,6 @@ namespace Navigation.Controllers
         private bool UserExists(int id)
         {
             return _context.Admin.Any(e => e.AdminID == id);
-        }
+        }*/
     }
 }

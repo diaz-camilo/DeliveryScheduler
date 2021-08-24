@@ -11,7 +11,7 @@
 <div class="container">
     @foreach (var item in Model)
     {
-        <div class="row d-block ">
+        <div class="row d-block alert alert-primary rounded-10">
             <h3>@Html.DisplayFor(modelItem => item.CustomerName)</h3>
             <h5>@Html.DisplayFor(modelItem => item.CustomerMobile)</h5>
             <a class="btn btn-primary btn-block btn-lg mt-4 mb-4" href="@Html.DisplayFor(modelItem => item.Address)">Directions</a>

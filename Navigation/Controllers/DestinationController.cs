@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,6 @@ using Navigation.Models;
 
 namespace Navigation.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class DestinationController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,16 +19,17 @@ namespace Navigation.Controllers
             _context = context;
         }
         
-        
-
-        // GET: Destinations
-        public async Task<IActionResult> Index()
+        private Admin GetAdmin()
         {
-            var applicationDbContext = _context.Destinations.Include(d => d.Driver);
-            return View(await applicationDbContext.ToListAsync());
+            // Get logged in Admin
+            var adminUserName = HttpContext.User.Identity?.Name;
+            var admin = _context.Admin.FirstOrDefault(x => x.Identity.UserName == adminUserName);
+            return admin;
         }
 
-        // GET: Destinations/Details/5
+        
+
+        // GET: Destination/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -49,31 +48,7 @@ namespace Navigation.Controllers
             return View(destination);
         }
 
-        // GET: Destinations/Create
-        public IActionResult Create()
-        {
-            ViewData["DriverID"] = new SelectList(_context.Admin, "AdminID", "Name");
-            return View();
-        }
-
-        // POST: Destinations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Address,Notes,CustomerName,DueTime,StopNumber,CustomerMobile,DriverID")] Destination destination)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(destination);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DriverID"] = new SelectList(_context.Admin, "AdminID", "Name", destination.DriverID);
-            return View(destination);
-        }
-
-        // GET: Destinations/Edit/5
+        // GET: Destination/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,16 +61,19 @@ namespace Navigation.Controllers
             {
                 return NotFound();
             }
-            ViewData["DriverID"] = new SelectList(_context.Admin, "AdminID", "Name", destination.DriverID);
+
+            var drivers = _context.Drivers.Where(x => x.AdminID == GetAdmin().AdminID);
+            
+            ViewBag.DriverID = new SelectList(drivers, "DriverID", "Name", destination.DriverID);
             return View(destination);
         }
 
-        // POST: Destinations/Edit/5
+        // POST: Destination/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Address,Notes,CustomerName,DueTime,StopNumber,CustomerMobile,DriverID")] Destination destination)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Address,Notes,CustomerName,DueTime,CustomerMobile,DriverID")] Destination destination)
         {
             if (id != destination.Id)
             {
@@ -120,13 +98,14 @@ namespace Navigation.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AdminController.ListDestinations),"Admin");
             }
-            ViewData["DriverID"] = new SelectList(_context.Admin, "AdminID", "Name", destination.DriverID);
+            
+            ViewBag.DriverID = new SelectList(_context.Drivers, "DriverID", "Name", destination.DriverID);
             return View(destination);
         }
 
-        // GET: Destinations/Delete/5
+        // GET: Destination/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,7 +124,7 @@ namespace Navigation.Controllers
             return View(destination);
         }
 
-        // POST: Destinations/Delete/5
+        // POST: Destination/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -153,12 +132,46 @@ namespace Navigation.Controllers
             var destination = await _context.Destinations.FindAsync(id);
             _context.Destinations.Remove(destination);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminController.ListDestinations),"Admin");
         }
 
         private bool DestinationExists(int id)
         {
             return _context.Destinations.Any(e => e.Id == id);
         }
+        
+        // Unused CRUD methods
+        
+        /*
+        // GET: Destination
+        public async Task<IActionResult> Index()
+        {
+            var applicationDbContext = _context.Destinations.Include(d => d.Driver);
+            return View(await applicationDbContext.ToListAsync());
+        }
+        
+        // GET: Destination/Create
+        public IActionResult Create()
+        {
+            ViewData["DriverID"] = new SelectList(_context.Drivers, "DriverID", "DriverID");
+            return View();
+        }
+
+        // POST: Destination/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Address,Notes,CustomerName,DueTime,CustomerMobile,DriverID")] Destination destination)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(destination);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["DriverID"] = new SelectList(_context.Drivers, "DriverID", "DriverID", destination.DriverID);
+            return View(destination);
+        }*/
     }
 }
