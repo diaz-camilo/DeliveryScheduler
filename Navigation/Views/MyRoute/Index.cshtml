@@ -11,12 +11,12 @@
 <div class="container">
     @foreach (var item in Model)
     {
-        <div class="row d-block alert alert-primary rounded-10">
+        <div class="row d-block alert alert-secondary rounded-30">
             <h3>@Html.DisplayFor(modelItem => item.CustomerName)</h3>
             <h5>@Html.DisplayFor(modelItem => item.CustomerMobile)</h5>
             <a class="btn btn-primary btn-block btn-lg mt-4 mb-4" href="@Html.DisplayFor(modelItem => item.Address)">Directions</a>
             <p class="lead h5">
-                <strong>NOTES: </strong>@Html.DisplayFor(modelItem => item.Notes)
+                <b>NOTES:</b> @Html.DisplayFor(modelItem => item.Notes)
             </p>
             <h5>Due at: @item.DueTime.ToShortTimeString()</h5>
         </div>

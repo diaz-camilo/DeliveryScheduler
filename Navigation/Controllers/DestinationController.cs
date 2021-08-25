@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -134,10 +135,49 @@ namespace Navigation.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(AdminController.ListDestinations),"Admin");
         }
+        
+        // GET: Destination/DeleteAll/5
+        public async Task<IActionResult> DeleteAll(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var destinations = await _context.Destinations
+                .Include(d => d.Driver)
+                .Where(m => m.DriverID == id).ToListAsync();
+            if (destinations.IsNullOrEmpty())
+            {
+                return NotFound();
+            }
+
+            return View(destinations);
+        }
+
+        // POST: Destination/DeleteAll/5
+        [HttpPost, ActionName("DeleteAll")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAllConfirmed(int id)
+        {
+            var destinations = await _context.Destinations
+                .Where(x => x.DriverID == id).ToListAsync();
+            _context.Destinations.RemoveRange(destinations);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(AdminController.ListDestinations),"Admin");
+        }
 
         private bool DestinationExists(int id)
         {
             return _context.Destinations.Any(e => e.Id == id);
+        }
+
+        private bool isDriverUnderAdmin(int driverId)
+        {
+            var drivers = GetAdmin().Drivers;
+
+            return true;
+
         }
         
         // Unused CRUD methods

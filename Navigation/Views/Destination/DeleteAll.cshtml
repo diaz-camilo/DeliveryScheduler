@@ -1,0 +1,62 @@
+@model List<Navigation.Models.Destination>
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var driver = Model[0].Driver;
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete all destinations for @driver.Name?</h3>
+<div>
+    <h4>Destinations</h4>
+    <hr />
+    @foreach (var destination in Model)
+    {
+        <dl class="row">
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.Address)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.Address)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.Notes)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.Notes)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.CustomerName)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.CustomerName)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.DueTime)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.DueTime)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.CustomerMobile)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.CustomerMobile)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => destination.Driver)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => destination.Driver.Name)
+            </dd >
+        </dl>
+    }
+    
+    <form asp-action="DeleteAll">
+        <input type="hidden" name="id" value="@Model[0].Driver.DriverID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-controller="Admin" asp-action="ListDestinations">Back to List</a>
+    </form>
+</div>

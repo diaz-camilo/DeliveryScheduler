@@ -1,4 +1,4 @@
-@model Navigation.Models.Driver
+@model Navigation.Models.EditDriverModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -25,14 +25,9 @@
                 <span asp-validation-for="Mobile" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IdentityID" class="control-label"></label>
-                <select asp-for="IdentityID" class="form-control" asp-items="ViewBag.IdentityID"></select>
-                <span asp-validation-for="IdentityID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdminID" class="control-label"></label>
-                <select asp-for="AdminID" class="form-control" asp-items="ViewBag.AdminID"></select>
-                <span asp-validation-for="AdminID" class="text-danger"></span>
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -42,7 +37,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Admin" asp-action="ListDrivers">Back to Drivers List</a>
 </div>
 
 @section Scripts {

@@ -22,6 +22,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Identity.Email)
         </th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -36,6 +37,11 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Identity.Email)
+            </td>
+            <td>
+                <a asp-controller="Driver" asp-action="Edit" asp-route-id="@item.DriverID">Edit</a> |
+                <a asp-controller="Driver" asp-action="Details" asp-route-id="@item.DriverID">Details</a> |
+                <a asp-controller="Driver" asp-action="Delete" asp-route-id="@item.DriverID">Delete</a>
             </td>
         </tr>
     }

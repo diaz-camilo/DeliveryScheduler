@@ -9,7 +9,10 @@
 
 @foreach (var item in Model)
 {
-    <h3 class="p-3">@Html.DisplayFor(model => item.Name)</h3>
+    <div class="p-3">
+        <h3 >@Html.DisplayFor(model => item.Name)</h3>
+        <a class="btn btn-outline-danger" asp-controller="Destination" asp-action="DeleteAll" asp-route-id="@item.DriverID">Delete All</a>
+    </div>
     <table class="table table-striped">
         <thead>
         <tr>
