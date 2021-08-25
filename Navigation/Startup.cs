@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Navigation.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Navigation.Services;
 
 namespace Navigation
 {
@@ -40,14 +42,17 @@ namespace Navigation
 
             services.AddDefaultIdentity<IdentityUser>(options =>
                 {
-                    options.SignIn.RequireConfirmedAccount = false;
-                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.SignIn.RequireConfirmedEmail = true;
                     options.SignIn.RequireConfirmedPhoneNumber = false;
 
                     options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            
+            services.AddTransient<IEmailSender, EmailSender>();
+            
             services.AddControllersWithViews();
         }
 

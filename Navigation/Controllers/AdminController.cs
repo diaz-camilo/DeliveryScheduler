@@ -146,12 +146,13 @@ namespace Navigation.Controllers
             await _context.SaveChangesAsync();
 
             ViewBag.isSuccess = true;
-            var successModelodel = new AddDestinationModel()
+            ModelState.Clear();
+            var successMode = new AddDestinationModel()
             {
                 Drivers = selectListOfDrivers
             };
 
-            return View(successModelodel);
+            return View(successMode);
         }
 
         public IActionResult ListDestinations(int? i)

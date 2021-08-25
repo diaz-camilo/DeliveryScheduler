@@ -11,49 +11,38 @@
 <h3>Are you sure you want to delete all destinations for @driver.Name?</h3>
 <div>
     <h4>Destinations</h4>
-    <hr />
-    @foreach (var destination in Model)
-    {
-        <dl class="row">
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.Address)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.Address)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.Notes)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.Notes)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.CustomerName)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.CustomerName)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.DueTime)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.DueTime)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.CustomerMobile)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.CustomerMobile)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => destination.Driver)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => destination.Driver.Name)
-            </dd >
-        </dl>
-    }
-    
+    <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].CustomerName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Address)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].DueTime)
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var destination in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => destination.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => destination.Address)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => destination.DueTime)
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
     <form asp-action="DeleteAll">
         <input type="hidden" name="id" value="@Model[0].Driver.DriverID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
